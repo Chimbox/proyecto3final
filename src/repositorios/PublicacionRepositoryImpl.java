@@ -28,9 +28,10 @@ public class PublicacionRepositoryImpl extends RepositoryBase<Publicacion> imple
     @Override
     public List<Publicacion> buscar() {
         List lstPublicaciones = new ArrayList<Publicacion>();
-        List lstComentarios = new ArrayList<Comentario>();
+        List lstComentarios;
         MongoCollection<Document> collection = this.getDatabase().getCollection("publicaciones");
         for (Document doc : collection.find()) {
+            lstComentarios= new ArrayList<Comentario>();
             for (Document docComentario : doc.getList("comentarios", Document.class)) {
                 lstComentarios.add(
                         new Comentario(
@@ -59,8 +60,9 @@ public class PublicacionRepositoryImpl extends RepositoryBase<Publicacion> imple
     @Override
     public List<Publicacion> buscarPorTag(String tag) {
         List lstPublicaciones = new ArrayList<Publicacion>();
-        List lstComentarios = new ArrayList<Comentario>();
+        List lstComentarios;
         for (Document doc : this.getDatabase().getCollection("publicaciones").find(Filters.regex("tags", Pattern.compile(tag, Pattern.CASE_INSENSITIVE)))) {
+            lstComentarios= new ArrayList<Comentario>();
             for (Document docComentario : doc.getList("comentarios", Document.class)) {
                 lstComentarios.add(
                         new Comentario(

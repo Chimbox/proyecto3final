@@ -69,7 +69,7 @@ public class pres {
         Publicacion publicacion2=new Publicacion(usuario2, 
                 new Fecha("2020/05/19 08:30"), 
                 "Esta es otra publicación en Faceboot", 
-                Arrays.asList("primera", "faceboot", "first"),
+                Arrays.asList("segunda", "faceboot", "second"),
                 Arrays.asList(comentario3,comentario4,comentario5));
         
         publicaciones.insertar(publicacion);
@@ -78,6 +78,12 @@ public class pres {
         System.out.println("--------PUBLICACIONES-----------");
         
         for (Publicacion pub : publicaciones.buscar()) {
+            System.out.println(pub);
+        }
+        
+        System.out.println("--------PUBLICACIONES CON ETIQUETA 'segunda'-----------");
+        
+        for (Publicacion pub : publicaciones.buscarPorTag("segunda")) {
             System.out.println(pub);
             
         }
