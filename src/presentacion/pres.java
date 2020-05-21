@@ -1,5 +1,6 @@
 package presentacion;
 
+import com.mongodb.MongoClient;
 import java.util.Arrays;
 import java.util.List;
 import objetosServicio.Fecha;
@@ -13,11 +14,10 @@ import negocio.*;
 public class pres {
 
     public static void main(String[] args) {
-        MongoDb db = new MongoDb("localhost", "faceboot");
-        UsuarioRepositoryImpl usuarios = new UsuarioRepositoryImpl(db);
-        PublicacionRepositoryImpl publicaciones=new PublicacionRepositoryImpl(db);
+        MongoClient cliente = new MongoClient("localhost");
         
-        db.getDb().drop();
+        UsuarioRepositoryImpl usuarios = new UsuarioRepositoryImpl(cliente);
+        PublicacionRepositoryImpl publicaciones=new PublicacionRepositoryImpl(cliente);
 
         System.out.println("--------USUARIOS-----------");
         

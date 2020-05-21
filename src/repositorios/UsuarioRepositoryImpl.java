@@ -5,6 +5,7 @@
  */
 package repositorios;
 
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Updates;
@@ -17,7 +18,9 @@ import org.bson.types.ObjectId;
 
 public class UsuarioRepositoryImpl extends RepositoryBase<Usuario> implements UsuarioRepository {
 
-    public UsuarioRepositoryImpl(MongoDb mongo) {
+    private static Usuario post;
+
+    public UsuarioRepositoryImpl(MongoClient mongo) {
         super(mongo);
     }
 
@@ -26,15 +29,7 @@ public class UsuarioRepositoryImpl extends RepositoryBase<Usuario> implements Us
         List lstUsuarios = new ArrayList<Usuario>();
         for (Document doc : this.getDatabase().getCollection("usuarios").find()) {
             lstUsuarios.add(
-                    new Usuario(
-                            doc.getObjectId("_id"),
-                            doc.getString("nombre"),
-                            doc.getInteger("edad"),
-                            doc.getBoolean("sexo"),
-                            new Fecha(doc.getString("fecha_nac")),
-                            doc.getList("peliculas", String.class),
-                            doc.getList("musica", String.class)
-                    )
+                    UsuarioRepositoryImpl.fromDocument(doc)
             );
         }
         return lstUsuarios;
@@ -42,32 +37,17 @@ public class UsuarioRepositoryImpl extends RepositoryBase<Usuario> implements Us
 
     @Override
     public Usuario buscarPorId(ObjectId id) {
-    
-            Document doc = this.getDatabase().getCollection("usuarios").find(Filters.eq("_id", id)).first();
-            return new Usuario(
-                    id,
-                    doc.getString("nombre"),
-                    doc.getInteger("edad"),
-                    doc.getBoolean("sexo"),
-                    new Fecha(doc.getString("fecha_nac")),
-                    doc.getList("peliculas", String.class),
-                    doc.getList("musica", String.class)
-            );
-       
+
+        Document doc = this.getDatabase().getCollection("usuarios").find(Filters.eq("_id", id)).first();
+        return UsuarioRepositoryImpl.fromDocument(doc);
+
     }
 
     @Override
     public void insertar(Usuario usuario) {
         try {
             this.getDatabase().getCollection("usuarios").insertOne(
-                    new Document()
-                            .append("_id", usuario.getId())
-                            .append("nombre", usuario.getNombre())
-                            .append("edad", usuario.getEdad())
-                            .append("sexo", usuario.getSexo())
-                            .append("fecha_nac", usuario.getFechaNacimiento().toString())
-                            .append("peliculas", usuario.getPeliculas())
-                            .append("musica", usuario.getGenerosMusicales())
+                    UsuarioRepositoryImpl.toDocument(usuario)
             );
         } catch (Exception e) {
 
@@ -103,6 +83,42 @@ public class UsuarioRepositoryImpl extends RepositoryBase<Usuario> implements Us
         this.getDatabase().getCollection("usuarios").deleteOne(
                 Filters.eq("_id", id)
         );
+    }
+
+    private static Usuario fromDocument(Document doc) {
+        try {
+            post=new Usuario(
+                    doc.getObjectId("id"),
+                    doc.getString("nombre"),
+                    doc.getInteger("edad"),
+                    doc.getBoolean("sexo"),
+                    new Fecha(doc.getString("fecha_nac")),
+                    doc.getList("peliculas", String.class),
+                    doc.getList("musica", String.class)
+            );
+        } catch (Exception e) {
+
+        }
+
+        return post;
+    }
+
+    private static Document toDocument(Usuario usuario) {
+        try {
+            return new Document()
+                    .append("_id", usuario.getId())
+                    .append("nombre", usuario.getNombre())
+                    .append("edad", usuario.getEdad())
+                    .append("sexo", usuario.getSexo())
+                    .append("fecha_nac", usuario.getFechaNacimiento().toString())
+                    .append("peliculas", usuario.getPeliculas())
+                    .append("musica", usuario.getGenerosMusicales());
+            
+        } catch (Exception e) {
+
+        }
+        return null;
+
     }
 
 }

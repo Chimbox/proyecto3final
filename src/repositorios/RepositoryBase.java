@@ -5,6 +5,7 @@
  */
 package repositorios;
 
+import com.mongodb.MongoClient;
 import com.mongodb.client.MongoDatabase;
 /**
  *
@@ -12,13 +13,13 @@ import com.mongodb.client.MongoDatabase;
  */
 public abstract class RepositoryBase<T> implements Repository<T>{
     
-    private final MongoDb mongo;
+    private final MongoClient mongo;
 
-    public RepositoryBase(MongoDb mongo) {
+    public RepositoryBase(MongoClient mongo) {
         this.mongo=mongo;
     }
     
     public MongoDatabase getDatabase(){
-        return this.mongo.getDb();
+        return this.mongo.getDatabase("faceboot");
     }
 }
